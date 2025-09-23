@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'screens/splash_screen.dart';
+import 'screens/invoice/edit_invoice_screen.dart';
 import 'providers/invoice_provider.dart';
 import 'providers/inventory_provider.dart';
 import 'providers/expense_provider.dart';
 import 'providers/customer_provider.dart';
 import 'utils/database_helper.dart';
+import 'models/invoice.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize database factory for web
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  } else {
+    // For non-web platforms, use sqflite_common_ffi
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
+  
   await DatabaseHelper.instance.database;
   runApp(const HisaabPlusApp());
 }
@@ -30,6 +45,12 @@ class HisaabPlusApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: _buildModernTheme(),
         home: const SplashScreen(),
+        routes: {
+          '/edit_invoice': (context) {
+            final invoice = ModalRoute.of(context)!.settings.arguments as Invoice;
+            return EditInvoiceScreen(invoice: invoice);
+          },
+        },
       ),
     );
   }
@@ -38,7 +59,6 @@ class HisaabPlusApp extends StatelessWidget {
     const primaryColor = Color(0xFF1A73E8); // Modern Google Blue
     const secondaryColor = Color(0xFF34A853); // Modern Green
     const surfaceColor = Color(0xFFF8F9FA); // Light gray surface
-    const backgroundColor = Colors.white;
     
     return ThemeData(
       useMaterial3: true,
@@ -48,7 +68,7 @@ class HisaabPlusApp extends StatelessWidget {
         primary: primaryColor,
         secondary: secondaryColor,
         surface: surfaceColor,
-        background: backgroundColor,
+        // background: backgroundColor, // Deprecated - using surface instead
       ),
       scaffoldBackgroundColor: surfaceColor,
       

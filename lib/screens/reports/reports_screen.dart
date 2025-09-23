@@ -522,7 +522,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               title: Text(invoice.invoiceNumber),
               subtitle: Text(invoice.customerName),
               trailing: Text('Rs.${invoice.total.toStringAsFixed(2)}'),
-            )).toList(),
+            )),
           ],
         ),
       ),
@@ -553,7 +553,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               ),
               title: Text(entry.key),
               trailing: Text('Rs.${entry.value.toStringAsFixed(2)}'),
-            )).toList(),
+            )),
           ],
         ),
       ),
@@ -591,11 +591,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
-                const Icon(Icons.warning, color: Colors.red),
-                const SizedBox(width: 8),
-                const Text(
+                Icon(Icons.warning, color: Colors.red),
+                SizedBox(width: 8),
+                Text(
                   'Low Stock Alert',
                   style: TextStyle(
                     fontSize: 18,
@@ -617,7 +617,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 'Min: ${product.minStockLevel}',
                 style: TextStyle(color: Colors.grey[600]),
               ),
-            )).toList(),
+            )),
           ],
         ),
       ),
@@ -650,7 +650,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               title: Text(product.name),
               subtitle: Text('Stock: ${product.stockQuantity} ${product.unit}'),
               trailing: Text('Rs.${(product.price * product.stockQuantity).toStringAsFixed(0)}'),
-            )).toList(),
+            )),
           ],
         ),
       ),

@@ -66,14 +66,14 @@ class HisaabBotService {
         for (var apiCall in apiCalls) {
           try {
             String response = await apiCall().timeout(
-              Duration(seconds: 10),
+              const Duration(seconds: 10),
               onTimeout: () => throw Exception('Timeout'),
             );
             if (response.isNotEmpty && !response.contains('خرابی')) {
               return '🌐 **Online AI**\n\n$response';
             }
           } catch (e) {
-            print('API failed: $e');
+            // API failed: $e - continuing to next API
             continue; // Try next API
           }
         }

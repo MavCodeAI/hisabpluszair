@@ -3,11 +3,13 @@ import 'package:flutter/services.dart';
 import '../../services/ai_chatbot_service.dart';
 
 class ChatBotScreen extends StatefulWidget {
+  const ChatBotScreen({super.key});
+
   @override
-  _ChatBotScreenState createState() => _ChatBotScreenState();
+  ChatBotScreenState createState() => ChatBotScreenState();
 }
 
-class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateMixin {
+class ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateMixin {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
@@ -19,7 +21,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       vsync: this,
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -123,7 +125,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
       }
@@ -133,16 +135,16 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF8F9FA),
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xFF2E7D32),
+        backgroundColor: const Color(0xFF2E7D32),
         title: Row(
           children: [
             Container(
               width: 40,
               height: 40,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
                 shape: BoxShape.circle,
                 boxShadow: [
@@ -153,14 +155,14 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
                   ),
                 ],
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.smart_toy,
                 color: Color(0xFF2E7D32),
                 size: 24,
               ),
             ),
-            SizedBox(width: 12),
-            Column(
+            const SizedBox(width: 12),
+            const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -184,7 +186,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.info_outline, color: Colors.white),
+            icon: const Icon(Icons.info_outline, color: Colors.white),
             onPressed: () {
               _showInfoDialog();
             },
@@ -199,7 +201,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
               opacity: _fadeAnimation,
               child: ListView.builder(
                 controller: _scrollController,
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   return _buildMessageBubble(_messages[index]);
@@ -211,8 +213,8 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
           // Loading Indicator
           if (_isLoading)
             Container(
-              padding: EdgeInsets.symmetric(vertical: 8),
-              child: Row(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
@@ -238,30 +240,30 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
           
           // Quick Actions
           if (!_isLoading)
-            Container(
+            SizedBox(
               height: 50,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: HisaabBotService.getQuickActions().length,
                 itemBuilder: (context, index) {
                   final action = HisaabBotService.getQuickActions()[index];
                   return Container(
-                    margin: EdgeInsets.only(right: 8),
+                    margin: const EdgeInsets.only(right: 8),
                     child: ElevatedButton(
                       onPressed: () => _sendMessage(action['query']!),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF2E7D32),
+                        backgroundColor: const Color(0xFF2E7D32),
                         foregroundColor: Colors.white,
                         elevation: 2,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       ),
                       child: Text(
                         action['text']!,
-                        style: TextStyle(fontSize: 12),
+                        style: const TextStyle(fontSize: 12),
                       ),
                     ),
                   );
@@ -271,8 +273,8 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
           
           // Message Input
           Container(
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
+            padding: const EdgeInsets.all(16),
+            decoration: const BoxDecoration(
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
@@ -287,19 +289,19 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Color(0xFFF5F5F5),
+                      color: const Color(0xFFF5F5F5),
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Color(0xFFE0E0E0)),
+                      border: Border.all(color: const Color(0xFFE0E0E0)),
                     ),
                     child: TextField(
                       controller: _messageController,
                       maxLines: null,
                       textInputAction: TextInputAction.send,
                       onSubmitted: _sendMessage,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'اپنا سوال لکھیں یا کوئی مدد چاہیے؟',
                         hintStyle: TextStyle(
-                          color: Colors.grey[600],
+                          color: Colors.grey,
                           fontSize: 14,
                         ),
                         border: InputBorder.none,
@@ -311,22 +313,22 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
                     ),
                   ),
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color(0xFF2E7D32),
+                    color: const Color(0xFF2E7D32),
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Color(0xFF2E7D32).withOpacity(0.3),
+                        color: const Color(0xFF2E7D32).withOpacity(0.3),
                         blurRadius: 4,
-                        offset: Offset(0, 2),
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
                   child: IconButton(
                     onPressed: () => _sendMessage(_messageController.text),
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.send,
                       color: Colors.white,
                       size: 20,
@@ -343,7 +345,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
 
   Widget _buildMessageBubble(ChatMessage message) {
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       child: Row(
         mainAxisAlignment:
             message.isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
@@ -353,12 +355,12 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
             Container(
               width: 32,
               height: 32,
-              margin: EdgeInsets.only(right: 8, top: 4),
-              decoration: BoxDecoration(
+              margin: const EdgeInsets.only(right: 8, top: 4),
+              decoration: const BoxDecoration(
                 color: Color(0xFF2E7D32),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.smart_toy,
                 color: Colors.white,
                 size: 18,
@@ -366,13 +368,13 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
             ),
           Flexible(
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
                 color: message.isUser
-                    ? Color(0xFF2E7D32)
+                    ? const Color(0xFF2E7D32)
                     : Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
                     blurRadius: 4,
@@ -391,7 +393,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
                       height: 1.4,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     _formatTime(message.timestamp),
                     style: TextStyle(
@@ -409,12 +411,12 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
             Container(
               width: 32,
               height: 32,
-              margin: EdgeInsets.only(left: 8, top: 4),
-              decoration: BoxDecoration(
+              margin: const EdgeInsets.only(left: 8, top: 4),
+              decoration: const BoxDecoration(
                 color: Color(0xFF4CAF50),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
+              child: const Icon(
                 Icons.person,
                 color: Colors.white,
                 size: 18,
@@ -437,14 +439,14 @@ class _ChatBotScreenState extends State<ChatBotScreen> with TickerProviderStateM
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          title: Row(
+          title: const Row(
             children: [
               Icon(Icons.smart_toy, color: Color(0xFF2E7D32)),
               SizedBox(width: 8),
               Text('HisaabBot Info'),
             ],
           ),
-          content: Text(
+          content: const Text(
             '''🤖 **Multiple AI Models:**
 • Groq (Fastest)
 • OpenRouter (DeepSeek R1)
@@ -465,7 +467,7 @@ All models have generous free tiers!''',
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(
+              child: const Text(
                 'Got it!',
                 style: TextStyle(color: Color(0xFF2E7D32)),
               ),

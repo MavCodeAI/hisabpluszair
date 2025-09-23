@@ -94,7 +94,7 @@ class ImagePickerService {
       // Generate unique filename
       final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
       final String extension = image.path.split('.').last;
-      final String fileName = 'img_${timestamp}.$extension';
+      final String fileName = 'img_$timestamp.$extension';
       final String savedPath = '$imagesDir/$fileName';
 
       // Copy file to app directory
@@ -134,7 +134,7 @@ class ImagePickerService {
 
       final List<FileSystemEntity> files = await imageDirectory.list().toList();
       final List<String> imagePaths = files
-          .where((file) => file is File)
+          .whereType<File>()
           .map((file) => file.path)
           .where((path) => _isImageFile(path))
           .toList();

@@ -257,7 +257,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      if (product.description.isNotEmpty) ..[
+                      if (product.description.isNotEmpty) ...[
                         const SizedBox(height: 4),
                         Text(
                           product.description,

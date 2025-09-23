@@ -6,46 +6,55 @@ import '../../providers/inventory_provider.dart';
 import '../../models/invoice.dart';
 import '../../models/product.dart';
 
-class AddInvoiceScreen extends StatefulWidget {
-  final String? customerId;
-  final String? customerName;
-  final String? customerPhone;
+class EditInvoiceScreen extends StatefulWidget {
+  final Invoice invoice;
 
-  const AddInvoiceScreen({
+  const EditInvoiceScreen({
     super.key,
-    this.customerId,
-    this.customerName,
-    this.customerPhone,
+    required this.invoice,
   });
 
   @override
-  State<AddInvoiceScreen> createState() => _AddInvoiceScreenState();
+  State<EditInvoiceScreen> createState() => _EditInvoiceScreenState();
 }
 
-class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
+class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
   final _formKey = GlobalKey<FormState>();
   final _customerNameController = TextEditingController();
   final _customerPhoneController = TextEditingController();
   final _customerEmailController = TextEditingController();
   final _notesController = TextEditingController();
   
-  DateTime _selectedDate = DateTime.now();
-  DateTime _dueDate = DateTime.now().add(const Duration(days: 30));
-  double _gstRate = 18.0;
+  late DateTime _selectedDate;
+  late DateTime _dueDate;
+  late double _gstRate;
   
-  final List<InvoiceItem> _items = [];
+  late List<InvoiceItem> _items;
 
   @override
   void initState() {
     super.initState();
     
-    // Pre-fill customer data if provided
-    if (widget.customerName != null) {
-      _customerNameController.text = widget.customerName!;
-    }
-    if (widget.customerPhone != null) {
-      _customerPhoneController.text = widget.customerPhone!;
-    }
+    // Pre-fill all data from existing invoice
+    _customerNameController.text = widget.invoice.customerName;
+    _customerPhoneController.text = widget.invoice.customerPhone;
+    _customerEmailController.text = widget.invoice.customerEmail;
+    _notesController.text = widget.invoice.notes ?? '';
+    
+    _selectedDate = widget.invoice.date;
+    _dueDate = widget.invoice.dueDate;
+    _gstRate = widget.invoice.gstRate;
+    
+    // Create a copy of the items list
+    _items = widget.invoice.items.map((item) => InvoiceItem(
+      id: item.id,
+      invoiceId: item.invoiceId,
+      productName: item.productName,
+      description: item.description,
+      quantity: item.quantity,
+      rate: item.rate,
+      amount: item.amount,
+    )).toList();
     
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<InventoryProvider>(context, listen: false).loadProducts();
@@ -56,10 +65,10 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Invoice'),
+        title: Text('Edit Invoice ${widget.invoice.invoiceNumber}'),
         actions: [
           IconButton(
-            onPressed: _saveInvoice,
+            onPressed: _updateInvoice,
             icon: const Icon(Icons.save),
           ),
         ],
@@ -84,12 +93,12 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _saveInvoice,
+                  onPressed: _updateInvoice,
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
                   child: const Text(
-                    'Create Invoice',
+                    'Update Invoice',
                     style: TextStyle(fontSize: 16),
                   ),
                 ),
@@ -280,9 +289,18 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
                     ),
                   ),
                 ),
-                IconButton(
-                  onPressed: () => _removeItem(index),
-                  icon: const Icon(Icons.delete, color: Colors.red),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: () => _editItem(index),
+                      icon: const Icon(Icons.edit, color: Colors.blue),
+                    ),
+                    IconButton(
+                      onPressed: () => _removeItem(index),
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -449,13 +467,27 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
     );
   }
 
+  void _editItem(int index) {
+    showDialog(
+      context: context,
+      builder: (context) => _EditItemDialog(
+        item: _items[index],
+        onItemUpdated: (updatedItem) {
+          setState(() {
+            _items[index] = updatedItem;
+          });
+        },
+      ),
+    );
+  }
+
   void _removeItem(int index) {
     setState(() {
       _items.removeAt(index);
     });
   }
 
-  void _saveInvoice() {
+  void _updateInvoice() {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -474,12 +506,9 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
     final gstAmount = (subtotal * _gstRate) / 100;
     final total = subtotal + gstAmount;
 
-    final invoiceProvider = Provider.of<InvoiceProvider>(context, listen: false);
-    final invoiceNumber = invoiceProvider.generateInvoiceNumber();
-
-    final invoice = Invoice(
-      id: 'inv_${DateTime.now().millisecondsSinceEpoch}',
-      invoiceNumber: invoiceNumber,
+    final updatedInvoice = Invoice(
+      id: widget.invoice.id,
+      invoiceNumber: widget.invoice.invoiceNumber, // Keep original invoice number
       customerName: _customerNameController.text,
       customerPhone: _customerPhoneController.text,
       customerEmail: _customerEmailController.text,
@@ -490,14 +519,16 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
       gstRate: _gstRate,
       gstAmount: gstAmount,
       total: total,
+      status: widget.invoice.status, // Keep original status
       notes: _notesController.text.isNotEmpty ? _notesController.text : null,
     );
 
-    invoiceProvider.addInvoice(invoice);
+    final invoiceProvider = Provider.of<InvoiceProvider>(context, listen: false);
+    invoiceProvider.updateInvoice(updatedInvoice);
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Invoice created successfully'),
+        content: Text('Invoice updated successfully'),
         backgroundColor: Colors.green,
       ),
     );
@@ -665,7 +696,7 @@ class _AddItemDialogState extends State<_AddItemDialog> {
 
     final item = InvoiceItem(
       id: 'item_${DateTime.now().millisecondsSinceEpoch}',
-      invoiceId: '', // Will be set when adding to invoice
+      invoiceId: '', // Will be set when updating invoice
       productName: _productNameController.text,
       description: _descriptionController.text,
       quantity: quantity,
@@ -674,6 +705,192 @@ class _AddItemDialogState extends State<_AddItemDialog> {
     );
 
     widget.onItemAdded(item);
+    Navigator.pop(context);
+  }
+
+  @override
+  void dispose() {
+    _productNameController.dispose();
+    _descriptionController.dispose();
+    _quantityController.dispose();
+    _rateController.dispose();
+    super.dispose();
+  }
+}
+
+class _EditItemDialog extends StatefulWidget {
+  final InvoiceItem item;
+  final Function(InvoiceItem) onItemUpdated;
+
+  const _EditItemDialog({
+    required this.item,
+    required this.onItemUpdated,
+  });
+
+  @override
+  State<_EditItemDialog> createState() => _EditItemDialogState();
+}
+
+class _EditItemDialogState extends State<_EditItemDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _productNameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _quantityController = TextEditingController();
+  final _rateController = TextEditingController();
+  
+  Product? _selectedProduct;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-fill with existing item data
+    _productNameController.text = widget.item.productName;
+    _descriptionController.text = widget.item.description;
+    _quantityController.text = widget.item.quantity.toString();
+    _rateController.text = widget.item.rate.toString();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit Item'),
+      content: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Consumer<InventoryProvider>(
+                builder: (context, provider, child) {
+                  return DropdownButtonFormField<Product>(
+                    value: _selectedProduct,
+                    decoration: const InputDecoration(
+                      labelText: 'Select Product',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: provider.products.map((product) {
+                      return DropdownMenuItem(
+                        value: product,
+                        child: Text(product.name),
+                      );
+                    }).toList(),
+                    onChanged: (product) {
+                      setState(() {
+                        _selectedProduct = product;
+                        if (product != null) {
+                          _productNameController.text = product.name;
+                          _descriptionController.text = product.description;
+                          _rateController.text = product.price.toString();
+                        }
+                      });
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _productNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Product Name *',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter product name';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Description',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 2,
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _quantityController,
+                      decoration: const InputDecoration(
+                        labelText: 'Quantity *',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Required';
+                        }
+                        if (int.tryParse(value) == null || int.parse(value) <= 0) {
+                          return 'Invalid';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _rateController,
+                      decoration: const InputDecoration(
+                        labelText: 'Rate *',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Required';
+                        }
+                        if (double.tryParse(value) == null || double.parse(value) <= 0) {
+                          return 'Invalid';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _updateItem,
+          child: const Text('Update'),
+        ),
+      ],
+    );
+  }
+
+  void _updateItem() {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    final quantity = int.parse(_quantityController.text);
+    final rate = double.parse(_rateController.text);
+    final amount = quantity * rate;
+
+    final updatedItem = InvoiceItem(
+      id: widget.item.id,
+      invoiceId: widget.item.invoiceId,
+      productName: _productNameController.text,
+      description: _descriptionController.text,
+      quantity: quantity,
+      rate: rate,
+      amount: amount,
+    );
+
+    widget.onItemUpdated(updatedItem);
     Navigator.pop(context);
   }
 

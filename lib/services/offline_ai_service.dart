@@ -666,7 +666,7 @@ class OfflineAIService {
   static Future<String> getAIResponse(String userMessage) async {
     try {
       // Add small delay to simulate "thinking"
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
       
       // Clean and normalize the query
       String query = userMessage.toLowerCase().trim();

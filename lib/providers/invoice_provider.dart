@@ -67,6 +67,42 @@ class InvoiceProvider with ChangeNotifier {
     }
   }
 
+  Future<void> updateInvoice(Invoice updatedInvoice) async {
+    try {
+      final db = await DatabaseHelper.instance.database;
+      
+      // Update the invoice
+      await db.update(
+        'invoices',
+        updatedInvoice.toMap(),
+        where: 'id = ?',
+        whereArgs: [updatedInvoice.id],
+      );
+      
+      // Delete existing invoice items
+      await db.delete(
+        'invoice_items',
+        where: 'invoiceId = ?',
+        whereArgs: [updatedInvoice.id],
+      );
+      
+      // Insert updated invoice items
+      for (final item in updatedInvoice.items) {
+        await db.insert('invoice_items', item.toMap());
+      }
+      
+      final index = _invoices.indexWhere((invoice) => invoice.id == updatedInvoice.id);
+      if (index != -1) {
+        _invoices[index] = updatedInvoice;
+        notifyListeners();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error updating invoice: $e');
+      }
+    }
+  }
+
   Future<void> updateInvoiceStatus(String invoiceId, String status) async {
     try {
       final db = await DatabaseHelper.instance.database;

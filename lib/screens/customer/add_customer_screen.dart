@@ -411,23 +411,26 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           ),
           TextButton(
             onPressed: () async {
-              Navigator.pop(context);
+              // Store navigator and scaffold messenger before async operation
+              final navigator = Navigator.of(context);
+              final scaffoldMessenger = ScaffoldMessenger.of(context);
+              final customerProvider = context.read<CustomerProvider>();
+              
+              navigator.pop(); // Close dialog first
               try {
-                await context
-                    .read<CustomerProvider>()
-                    .deleteCustomer(widget.customer!.id!);
+                await customerProvider.deleteCustomer(widget.customer!.id!);
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     const SnackBar(
                       content: Text('Customer deleted successfully'),
                       backgroundColor: Colors.green,
                     ),
                   );
-                  Navigator.pop(context);
+                  navigator.pop(); // Go back to previous screen
                 }
               } catch (e) {
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     SnackBar(
                       content: Text('Error deleting customer: $e'),
                       backgroundColor: Colors.red,

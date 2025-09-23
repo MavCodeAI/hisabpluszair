@@ -325,7 +325,7 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
                   ),
                 ],
               ),
-              if (invoice.status == 'pending') ..[
+              if (invoice.status == 'pending') ...[
                 const SizedBox(height: 12),
                 Row(
                   children: [

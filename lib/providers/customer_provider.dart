@@ -3,7 +3,7 @@ import '../models/customer.dart';
 import '../utils/database_helper.dart';
 
 class CustomerProvider with ChangeNotifier {
-  final DatabaseHelper _databaseHelper = DatabaseHelper();
+  final DatabaseHelper _databaseHelper = DatabaseHelper.instance;
   List<Customer> _customers = [];
   List<Customer> _filteredCustomers = [];
   bool _isLoading = false;

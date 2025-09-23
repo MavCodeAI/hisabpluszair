@@ -384,9 +384,10 @@ class _CustomerScreenState extends State<CustomerScreen> {
         break;
       case 'invoice':
         // Navigate to create invoice for this customer
-        // TODO: Implement navigation to invoice creation
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Create invoice functionality coming soon')),
+        Navigator.pushNamed(
+          context,
+          '/add_invoice',
+          arguments: {'customerId': customer.id, 'customerName': customer.name, 'customerPhone': customer.phone},
         );
         break;
       case 'delete':

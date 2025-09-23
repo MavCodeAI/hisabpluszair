@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../models/invoice.dart';
+import '../../services/pdf_service.dart';
 
 class InvoiceDetailScreen extends StatelessWidget {
   final Invoice invoice;
@@ -14,19 +15,15 @@ class InvoiceDetailScreen extends StatelessWidget {
         title: Text(invoice.invoiceNumber),
         actions: [
           IconButton(
-            onPressed: () {
-              // TODO: Implement share/print functionality
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Share/Print feature coming soon')),
-              );
-            },
+            onPressed: () => _shareInvoice(context),
             icon: const Icon(Icons.share),
           ),
           IconButton(
             onPressed: () {
-              // TODO: Implement edit functionality
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Edit feature coming soon')),
+              Navigator.pushNamed(
+                context,
+                '/edit_invoice',
+                arguments: invoice,
               );
             },
             icon: const Icon(Icons.edit),
@@ -47,7 +44,7 @@ class InvoiceDetailScreen extends StatelessWidget {
             _buildItemsList(),
             const SizedBox(height: 20),
             _buildTotalSection(),
-            if (invoice.notes != null && invoice.notes!.isNotEmpty) ..[
+            if (invoice.notes != null && invoice.notes!.isNotEmpty) ...[
               const SizedBox(height: 20),
               _buildNotesSection(),
             ],
@@ -171,7 +168,7 @@ class InvoiceDetailScreen extends StatelessWidget {
               invoice.customerPhone,
               style: const TextStyle(fontSize: 16),
             ),
-            if (invoice.customerEmail.isNotEmpty) ..[
+            if (invoice.customerEmail.isNotEmpty) ...[
               const SizedBox(height: 4),
               Text(
                 invoice.customerEmail,
@@ -256,7 +253,7 @@ class InvoiceDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            ...invoice.items.map((item) => _buildItemCard(item)).toList(),
+            ...invoice.items.map((item) => _buildItemCard(item)),
           ],
         ),
       ),
@@ -281,7 +278,7 @@ class InvoiceDetailScreen extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          if (item.description.isNotEmpty) ..[
+          if (item.description.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text(
               item.description,
@@ -402,5 +399,20 @@ class InvoiceDetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _shareInvoice(BuildContext context) async {
+    try {
+      await PdfService.instance.shareInvoice(invoice);
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error sharing invoice: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

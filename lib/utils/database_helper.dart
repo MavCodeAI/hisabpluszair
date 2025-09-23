@@ -224,7 +224,7 @@ class DatabaseHelper {
     });
 
     // Sample invoice
-    final invoiceId = 'inv_001';
+    const invoiceId = 'inv_001';
     await db.insert('invoices', {
       'id': invoiceId,
       'invoiceNumber': 'INV25001',

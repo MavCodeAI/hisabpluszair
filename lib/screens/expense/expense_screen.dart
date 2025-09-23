@@ -140,7 +140,6 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
     return Consumer<ExpenseProvider>(
       builder: (context, provider, child) {
         final monthlyExpenses = provider.getMonthlyExpenses(_selectedMonth);
-        final categoryExpenses = provider.expensesByCategory;
         
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -291,7 +290,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      if (expense.description.isNotEmpty) ..[
+                      if (expense.description.isNotEmpty) ...[
                         const SizedBox(height: 4),
                         Text(
                           expense.description,

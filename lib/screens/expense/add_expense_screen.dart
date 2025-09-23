@@ -292,7 +292,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               },
               activeColor: const Color(0xFF1976D2),
             ),
-            if (_isGstApplicable) ..[
+            if (_isGstApplicable) ...[
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -319,7 +319,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         fontSize: 14,
                       ),
                     ),
-                    if (_amountController.text.isNotEmpty && double.tryParse(_amountController.text) != null) ..[
+                    if (_amountController.text.isNotEmpty && double.tryParse(_amountController.text) != null) ...[
                       const SizedBox(height: 8),
                       Text(
                         'GST Amount: Rs.${(double.parse(_amountController.text) * 0.18).toStringAsFixed(2)}',

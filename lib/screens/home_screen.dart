@@ -180,7 +180,7 @@ class DashboardScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ChatBotScreen(),
+                        builder: (context) => const ChatBotScreen(),
                       ),
                     );
                   },
@@ -227,7 +227,7 @@ class DashboardScreen extends StatelessWidget {
                   const SizedBox(height: 32),
                   _buildQuickActions(context),
                   const SizedBox(height: 32),
-                  _buildRecentActivity(),
+                  _buildRecentActivity(context),
                   const SizedBox(height: 100), // Bottom padding for FAB
                 ],
               ),
@@ -325,8 +325,8 @@ class DashboardScreen extends StatelessWidget {
               child: InkWell(
                 onTap: () {},
                 borderRadius: BorderRadius.circular(16),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(
                     horizontal: 24,
                     vertical: 16,
                   ),
@@ -335,16 +335,16 @@ class DashboardScreen extends StatelessWidget {
                     children: [
                       Icon(
                         Icons.add_rounded,
-                        color: const Color(0xFF1A73E8),
+                        color: Color(0xFF1A73E8),
                         size: 20,
                       ),
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                       Text(
                         'Create New Invoice',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: const Color(0xFF1A73E8),
+                          color: Color(0xFF1A73E8),
                         ),
                       ),
                     ],
@@ -661,7 +661,7 @@ class DashboardScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ChatBotScreen(),
+                    builder: (context) => const ChatBotScreen(),
                   ),
                 );
               },
@@ -735,7 +735,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentActivity() {
+  Widget _buildRecentActivity(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

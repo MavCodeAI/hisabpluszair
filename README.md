@@ -416,6 +416,6 @@ If you find this project helpful, please give it a ⭐ on GitHub!
 
 ---
 
-**Author**: MiniMax Agent  
+**Author**: AB Darwesh 
 **Created**: 2025  
 **Flutter Version**: 3.x+

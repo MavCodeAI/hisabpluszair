@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:async';
+import 'dart:ui' as ui;
+import 'dart:io' show Platform;
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'screens/splash_screen.dart';
@@ -14,18 +17,39 @@ import 'models/invoice.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Global error handling to surface any silent errors on devices where VM service cannot bind
+  FlutterError.onError = (FlutterErrorDetails details) {
+    FlutterError.presentError(details);
+    // Also print to console
+    // ignore: avoid_print
+    print('FlutterError: \\n"+details.toStringShort()+"\\n'+details.exceptionAsString());
+  };
+  ui.PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
+    // ignore: avoid_print
+    print('Uncaught zone error: $error\n$stack');
+    return true; // handled
+  };
   
-  // Initialize database factory for web
-  if (kIsWeb) {
-    databaseFactory = databaseFactoryFfiWeb;
-  } else {
-    // For non-web platforms, use sqflite_common_ffi
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-  }
-  
-  await DatabaseHelper.instance.database;
-  runApp(const HisaabPlusApp());
+  runZonedGuarded(() async {
+    // Initialize database factory per-platform
+    if (kIsWeb) {
+      // Web uses the FFI web shim
+      databaseFactory = databaseFactoryFfiWeb;
+    } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      // Desktop uses sqflite_common_ffi
+      sqfliteFfiInit();
+      databaseFactory = databaseFactoryFfi;
+    } else {
+      // Android/iOS: use default sqflite implementation (do not override)
+    }
+    // ignore: avoid_print
+    print('App starting...');
+    runApp(const HisaabPlusApp());
+  }, (error, stack) {
+    // ignore: avoid_print
+    print('Zoned error: $error\n$stack');
+  });
 }
 
 class HisaabPlusApp extends StatelessWidget {
@@ -92,7 +116,7 @@ class HisaabPlusApp extends StatelessWidget {
       ),
       
       // Mobile-optimized Card Theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         color: Colors.white,
         shadowColor: Colors.black12,

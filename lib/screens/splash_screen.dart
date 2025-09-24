@@ -17,6 +17,11 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
+    // Debug: log when first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // ignore: avoid_print
+      print('SplashScreen: first frame rendered');
+    });
     _animationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,

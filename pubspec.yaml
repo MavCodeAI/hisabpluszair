@@ -10,7 +10,7 @@ name: hisaab_plus
 description: HisaabPlus v3.0 - Hybrid AI Business Management | 700+ Offline Topics + 6 Online APIs | Pakistani Accounting Solution
 
 publish_to: 'none'
-version: 3.0.0+1
+version: 3.0.0+2
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -55,6 +55,9 @@ dependencies:
 
   # Shared Preferences
   shared_preferences: ^2.2.2
+
+  # Firebase Core (required for FirebaseOptions and initialization)
+  firebase_core: ^2.31.1
 
 dev_dependencies:
   flutter_test:

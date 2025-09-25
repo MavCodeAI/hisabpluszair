@@ -12,6 +12,10 @@ import 'providers/invoice_provider.dart';
 import 'providers/inventory_provider.dart';
 import 'providers/expense_provider.dart';
 import 'providers/customer_provider.dart';
+import 'providers/supplier_provider.dart';
+import 'providers/stock_movement_provider.dart';
+import 'providers/purchase_order_provider.dart';
+import 'providers/reports_provider.dart';
 import 'utils/database_helper.dart';
 import 'models/invoice.dart';
 
@@ -63,6 +67,10 @@ class HisaabPlusApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => InventoryProvider()),
         ChangeNotifierProvider(create: (_) => ExpenseProvider()),
         ChangeNotifierProvider(create: (_) => CustomerProvider()),
+        ChangeNotifierProvider(create: (_) => SupplierProvider()),
+        ChangeNotifierProvider(create: (_) => StockMovementProvider()),
+        ChangeNotifierProvider(create: (_) => PurchaseOrderProvider()),
+        ChangeNotifierProvider(create: (_) => ReportsProvider()),
       ],
       child: MaterialApp(
         title: 'HisaabPlus - حساب پلس',

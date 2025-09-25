@@ -12,6 +12,10 @@ import 'settings/settings_screen.dart';
 import 'invoice/add_invoice_screen.dart';
 import 'customer/customer_screen.dart';
 import 'chatbot/chatbot_screen.dart';
+import 'suppliers/suppliers_screen.dart';
+import 'stock_movements/stock_movements_screen.dart';
+import 'purchase_orders/purchase_orders_screen.dart';
+import 'reports/inventory_reports_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -627,9 +631,61 @@ class DashboardScreen extends StatelessWidget {
               },
             ),
             _buildActionCard(
+              'Suppliers',
+              Icons.business_rounded,
+              const Color(0xFF00ACC1),
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SuppliersScreen(),
+                  ),
+                );
+              },
+            ),
+            _buildActionCard(
+              'Stock Movements',
+              Icons.swap_horiz_rounded,
+              const Color(0xFFFF6F00),
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const StockMovementsScreen(),
+                  ),
+                );
+              },
+            ),
+            _buildActionCard(
+              'Purchase Orders',
+              Icons.shopping_cart_rounded,
+              const Color(0xFF8BC34A),
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PurchaseOrdersScreen(),
+                  ),
+                );
+              },
+            ),
+            _buildActionCard(
+              'Inventory Reports',
+              Icons.analytics_rounded,
+              const Color(0xFF9C27B0),
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const InventoryReportsScreen(),
+                  ),
+                );
+              },
+            ),
+            _buildActionCard(
               'Customers',
               Icons.people_rounded,
-              const Color(0xFF00ACC1),
+              const Color(0xFF795548),
               () {
                 Navigator.push(
                   context,
@@ -648,19 +704,6 @@ class DashboardScreen extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const ExpenseScreen(),
-                  ),
-                );
-              },
-            ),
-            _buildActionCard(
-              'View Reports',
-              Icons.analytics_rounded,
-              const Color(0xFF9C27B0),
-              () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ReportsScreen(),
                   ),
                 );
               },

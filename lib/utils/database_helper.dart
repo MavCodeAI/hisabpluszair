@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import '../models/customer.dart';
@@ -19,8 +20,9 @@ class DatabaseHelper {
     
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // Updated version to include new tables
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -108,8 +110,166 @@ class DatabaseHelper {
       )
     ''');
 
+    // Create new tables for enhanced inventory
+    await _createNewTables(db);
+
     // Insert sample data
     await _insertSampleData(db);
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Add new tables for enhanced inventory features
+      await _createNewTables(db);
+      await _insertSampleInventoryData(db);
+    }
+  }
+
+  Future<void> _createNewTables(Database db) async {
+    // Create suppliers table
+    await db.execute('''
+      CREATE TABLE suppliers(
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        contactPerson TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        email TEXT,
+        address TEXT NOT NULL,
+        ntnNumber TEXT,
+        paymentTerms TEXT NOT NULL,
+        creditLimit REAL DEFAULT 0.0,
+        notes TEXT,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        totalPurchases REAL DEFAULT 0.0,
+        pendingAmount REAL DEFAULT 0.0
+      )
+    ''');
+
+    // Create stock_movements table
+    await db.execute('''
+      CREATE TABLE stock_movements(
+        id TEXT PRIMARY KEY,
+        productId TEXT NOT NULL,
+        productName TEXT NOT NULL,
+        type TEXT NOT NULL,
+        quantity INTEGER NOT NULL,
+        previousStock INTEGER NOT NULL,
+        newStock INTEGER NOT NULL,
+        unitCost REAL NOT NULL,
+        totalValue REAL NOT NULL,
+        reason TEXT NOT NULL,
+        referenceId TEXT,
+        supplierId TEXT,
+        performedBy TEXT NOT NULL,
+        createdAt TEXT NOT NULL,
+        notes TEXT,
+        FOREIGN KEY (productId) REFERENCES products (id),
+        FOREIGN KEY (supplierId) REFERENCES suppliers (id)
+      )
+    ''');
+
+    // Create purchase_orders table
+    await db.execute('''
+      CREATE TABLE purchase_orders(
+        id TEXT PRIMARY KEY,
+        orderNumber TEXT NOT NULL,
+        supplierId TEXT NOT NULL,
+        supplierName TEXT NOT NULL,
+        orderDate TEXT NOT NULL,
+        expectedDate TEXT,
+        receivedDate TEXT,
+        subtotal REAL NOT NULL,
+        salesTaxRate REAL NOT NULL,
+        salesTaxAmount REAL NOT NULL,
+        total REAL NOT NULL,
+        status TEXT NOT NULL,
+        notes TEXT,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        FOREIGN KEY (supplierId) REFERENCES suppliers (id)
+      )
+    ''');
+
+    // Create purchase_order_items table
+    await db.execute('''
+      CREATE TABLE purchase_order_items(
+        id TEXT PRIMARY KEY,
+        purchaseOrderId TEXT NOT NULL,
+        productId TEXT NOT NULL,
+        productName TEXT NOT NULL,
+        description TEXT NOT NULL,
+        orderedQuantity INTEGER NOT NULL,
+        receivedQuantity INTEGER DEFAULT 0,
+        unitPrice REAL NOT NULL,
+        totalPrice REAL NOT NULL,
+        unit TEXT NOT NULL,
+        FOREIGN KEY (purchaseOrderId) REFERENCES purchase_orders (id),
+        FOREIGN KEY (productId) REFERENCES products (id)
+      )
+    ''');
+
+    // Create goods_received_notes table
+    await db.execute('''
+      CREATE TABLE goods_received_notes(
+        id TEXT PRIMARY KEY,
+        grnNumber TEXT NOT NULL,
+        purchaseOrderId TEXT NOT NULL,
+        purchaseOrderNumber TEXT NOT NULL,
+        supplierId TEXT NOT NULL,
+        supplierName TEXT NOT NULL,
+        receivedDate TEXT NOT NULL,
+        receivedBy TEXT NOT NULL,
+        notes TEXT,
+        createdAt TEXT NOT NULL,
+        FOREIGN KEY (purchaseOrderId) REFERENCES purchase_orders (id),
+        FOREIGN KEY (supplierId) REFERENCES suppliers (id)
+      )
+    ''');
+
+    // Create goods_received_items table
+    await db.execute('''
+      CREATE TABLE goods_received_items(
+        id TEXT PRIMARY KEY,
+        grnId TEXT NOT NULL,
+        productId TEXT NOT NULL,
+        productName TEXT NOT NULL,
+        orderedQuantity INTEGER NOT NULL,
+        receivedQuantity INTEGER NOT NULL,
+        rejectedQuantity INTEGER DEFAULT 0,
+        unitPrice REAL NOT NULL,
+        totalValue REAL NOT NULL,
+        unit TEXT NOT NULL,
+        condition TEXT DEFAULT 'good',
+        notes TEXT,
+        FOREIGN KEY (grnId) REFERENCES goods_received_notes (id),
+        FOREIGN KEY (productId) REFERENCES products (id)
+      )
+    ''');
+
+    // Add costPrice column to products table if it doesn't exist
+    try {
+      await db.execute('''
+        ALTER TABLE products ADD COLUMN costPrice REAL DEFAULT 0.0
+      ''');
+    } catch (e) {
+      // Column already exists, ignore error
+      if (kDebugMode) {
+        print('costPrice column already exists: $e');
+      }
+    }
+
+    // Add supplierId column to products table if it doesn't exist
+    try {
+      await db.execute('''
+        ALTER TABLE products ADD COLUMN supplierId TEXT
+      ''');
+    } catch (e) {
+      // Column already exists, ignore error
+      if (kDebugMode) {
+        print('supplierId column already exists: $e');
+      }
+    }
   }
 
   Future<void> _insertSampleData(Database db) async {
@@ -163,10 +323,12 @@ class DatabaseHelper {
       'description': 'HP Pavilion 15-inch laptop with Intel i5 processor',
       'category': 'Electronics',
       'price': 45000.0,
+      'costPrice': 40000.0, // Added cost price
       'stockQuantity': 10,
       'minStockLevel': 3,
       'unit': 'pcs',
       'barcode': null,
+      'supplierId': 'sup_001', // Added supplier reference
       'createdAt': DateTime.now().toIso8601String(),
     });
 
@@ -176,10 +338,12 @@ class DatabaseHelper {
       'description': 'Ergonomic office chair with lumbar support',
       'category': 'Furniture',
       'price': 8500.0,
+      'costPrice': 7000.0, // Added cost price
       'stockQuantity': 25,
       'minStockLevel': 5,
       'unit': 'pcs',
       'barcode': null,
+      'supplierId': 'sup_002', // Added supplier reference
       'createdAt': DateTime.now().toIso8601String(),
     });
 
@@ -189,10 +353,12 @@ class DatabaseHelper {
       'description': 'Logitech wireless optical mouse',
       'category': 'Electronics',
       'price': 1200.0,
+      'costPrice': 900.0, // Added cost price
       'stockQuantity': 50,
       'minStockLevel': 10,
       'unit': 'pcs',
       'barcode': null,
+      'supplierId': 'sup_001', // Added supplier reference
       'createdAt': DateTime.now().toIso8601String(),
     });
 
@@ -260,6 +426,145 @@ class DatabaseHelper {
       'quantity': 1,
       'rate': 1200.0,
       'amount': 1200.0,
+    });
+  }
+
+  Future<void> _insertSampleInventoryData(Database db) async {
+    // Sample suppliers
+    await db.insert('suppliers', {
+      'id': 'sup_001',
+      'name': 'Tech Solutions Pvt Ltd',
+      'contactPerson': 'Muhammad Ahmed',
+      'phone': '+92 300 1111222',
+      'email': 'ahmed@techsolutions.pk',
+      'address': 'Plot 45, Industrial Area, Karachi',
+      'ntnNumber': '1234567-8',
+      'paymentTerms': '30 days',
+      'creditLimit': 500000.0,
+      'notes': 'Electronics and IT equipment supplier',
+      'createdAt': DateTime.now().subtract(const Duration(days: 90)).toIso8601String(),
+      'updatedAt': DateTime.now().toIso8601String(),
+      'totalPurchases': 150000.0,
+      'pendingAmount': 25000.0,
+    });
+
+    await db.insert('suppliers', {
+      'id': 'sup_002',
+      'name': 'Furniture World',
+      'contactPerson': 'Fatima Khan',
+      'phone': '+92 321 3333444',
+      'email': 'info@furnitureworld.pk',
+      'address': 'Furniture Market, Lahore',
+      'ntnNumber': '9876543-2',
+      'paymentTerms': '15 days',
+      'creditLimit': 200000.0,
+      'notes': 'Office and home furniture supplier',
+      'createdAt': DateTime.now().subtract(const Duration(days: 60)).toIso8601String(),
+      'updatedAt': DateTime.now().toIso8601String(),
+      'totalPurchases': 80000.0,
+      'pendingAmount': 0.0,
+    });
+
+    // Sample purchase order
+    const poId = 'po_001';
+    await db.insert('purchase_orders', {
+      'id': poId,
+      'orderNumber': 'PO25001',
+      'supplierId': 'sup_001',
+      'supplierName': 'Tech Solutions Pvt Ltd',
+      'orderDate': DateTime.now().subtract(const Duration(days: 7)).toIso8601String(),
+      'expectedDate': DateTime.now().add(const Duration(days: 3)).toIso8601String(),
+      'receivedDate': null,
+      'subtotal': 95000.0,
+      'salesTaxRate': 17.0,
+      'salesTaxAmount': 16150.0,
+      'total': 111150.0,
+      'status': 'confirmed',
+      'notes': 'Urgent order for new office setup',
+      'createdAt': DateTime.now().subtract(const Duration(days: 7)).toIso8601String(),
+      'updatedAt': DateTime.now().subtract(const Duration(days: 7)).toIso8601String(),
+    });
+
+    // Sample purchase order items
+    await db.insert('purchase_order_items', {
+      'id': 'poi_001',
+      'purchaseOrderId': poId,
+      'productId': 'prod_001',
+      'productName': 'Laptop HP Pavilion',
+      'description': 'HP Pavilion 15-inch laptop',
+      'orderedQuantity': 2,
+      'receivedQuantity': 0,
+      'unitPrice': 40000.0,
+      'totalPrice': 80000.0,
+      'unit': 'pcs',
+    });
+
+    await db.insert('purchase_order_items', {
+      'id': 'poi_002',
+      'purchaseOrderId': poId,
+      'productId': 'prod_003',
+      'productName': 'Wireless Mouse',
+      'description': 'Logitech wireless mouse',
+      'orderedQuantity': 25,
+      'receivedQuantity': 0,
+      'unitPrice': 600.0,
+      'totalPrice': 15000.0,
+      'unit': 'pcs',
+    });
+
+    // Sample stock movements
+    await db.insert('stock_movements', {
+      'id': 'mov_001',
+      'productId': 'prod_001',
+      'productName': 'Laptop HP Pavilion',
+      'type': 'stockIn',
+      'quantity': 10,
+      'previousStock': 0,
+      'newStock': 10,
+      'unitCost': 40000.0,
+      'totalValue': 400000.0,
+      'reason': 'Initial stock purchase',
+      'referenceId': null,
+      'supplierId': 'sup_001',
+      'performedBy': 'Admin',
+      'createdAt': DateTime.now().subtract(const Duration(days: 30)).toIso8601String(),
+      'notes': 'Initial inventory setup',
+    });
+
+    await db.insert('stock_movements', {
+      'id': 'mov_002',
+      'productId': 'prod_001',
+      'productName': 'Laptop HP Pavilion',
+      'type': 'stockOut',
+      'quantity': 1,
+      'previousStock': 10,
+      'newStock': 9,
+      'unitCost': 40000.0,
+      'totalValue': 40000.0,
+      'reason': 'Sale to customer',
+      'referenceId': 'inv_001',
+      'supplierId': null,
+      'performedBy': 'Admin',
+      'createdAt': DateTime.now().subtract(const Duration(days: 2)).toIso8601String(),
+      'notes': 'Sold via invoice INV25001',
+    });
+
+    await db.insert('stock_movements', {
+      'id': 'mov_003',
+      'productId': 'prod_003',
+      'productName': 'Wireless Mouse',
+      'type': 'stockIn',
+      'quantity': 50,
+      'previousStock': 0,
+      'newStock': 50,
+      'unitCost': 900.0,
+      'totalValue': 45000.0,
+      'reason': 'Bulk purchase',
+      'referenceId': null,
+      'supplierId': 'sup_001',
+      'performedBy': 'Admin',
+      'createdAt': DateTime.now().subtract(const Duration(days: 25)).toIso8601String(),
+      'notes': 'Bulk order for better pricing',
     });
   }
 

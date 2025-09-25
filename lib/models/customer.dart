@@ -4,7 +4,7 @@ class Customer {
   final String? phone;
   final String? email;
   final String? address;
-  final String? gstNumber;
+  final String? gstNumber; // NTN Number (National Tax Number for Pakistan) - keeping field name for DB compatibility
   final DateTime createdAt;
   final DateTime updatedAt;
   final double totalPurchases;

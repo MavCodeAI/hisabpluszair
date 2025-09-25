@@ -36,8 +36,8 @@ class DatabaseHelper {
         date TEXT NOT NULL,
         dueDate TEXT NOT NULL,
         subtotal REAL NOT NULL,
-        gstRate REAL NOT NULL,
-        gstAmount REAL NOT NULL,
+        gstRate REAL NOT NULL, -- Sales Tax rate (Pakistan)
+        gstAmount REAL NOT NULL, -- Sales Tax amount (Pakistan)
         total REAL NOT NULL,
         status TEXT NOT NULL,
         notes TEXT
@@ -119,10 +119,10 @@ class DatabaseHelper {
       'phone': '+92 300 1234567',
       'email': 'john.doe@email.com',
       'address': 'House 123, Street 45, Karachi',
-      'gstNumber': '27AAAAA0000A1Z5',
+      'gstNumber': '12345678', // NTN Number (Pakistan)
       'createdAt': DateTime.now().subtract(const Duration(days: 30)).toIso8601String(),
       'updatedAt': DateTime.now().toIso8601String(),
-      'totalPurchases': 54516.0,
+      'totalPurchases': 54054.0, -- Updated to match Pakistani Sales Tax calculation
       'pendingAmount': 15000.0,
       'customerType': 'Premium',
       'notes': 'Regular customer, preferred payment terms',
@@ -133,7 +133,7 @@ class DatabaseHelper {
       'phone': '+92 321 9876543',
       'email': 'sarah.khan@business.com',
       'address': 'Office 45, Plaza 12, Lahore',
-      'gstNumber': '27BBBBB1111B2Z6',
+      'gstNumber': '87654321', // NTN Number (Pakistan)
       'createdAt': DateTime.now().subtract(const Duration(days: 15)).toIso8601String(),
       'updatedAt': DateTime.now().toIso8601String(),
       'totalPurchases': 125000.0,
@@ -206,8 +206,8 @@ class DatabaseHelper {
       'date': DateTime.now().subtract(const Duration(days: 5)).toIso8601String(),
       'paymentMethod': 'bank_transfer',
       'receiptPath': null,
-      'isGstApplicable': 1,
-      'gstAmount': 4500.0,
+      'isGstApplicable': 1, -- Sales Tax applicable
+      'gstAmount': 4250.0, -- 25000 * 17% = 4250
     });
 
     await db.insert('expenses', {
@@ -219,8 +219,8 @@ class DatabaseHelper {
       'date': DateTime.now().subtract(const Duration(days: 3)).toIso8601String(),
       'paymentMethod': 'cash',
       'receiptPath': null,
-      'isGstApplicable': 1,
-      'gstAmount': 630.0,
+      'isGstApplicable': 1, -- Sales Tax applicable
+      'gstAmount': 595.0, -- 3500 * 17% = 595
     });
 
     // Sample invoice
@@ -234,9 +234,9 @@ class DatabaseHelper {
       'date': DateTime.now().subtract(const Duration(days: 2)).toIso8601String(),
       'dueDate': DateTime.now().add(const Duration(days: 28)).toIso8601String(),
       'subtotal': 46200.0,
-      'gstRate': 18.0,
-      'gstAmount': 8316.0,
-      'total': 54516.0,
+      'gstRate': 17.0, -- Sales Tax 17% for Pakistan
+      'gstAmount': 7854.0, -- 46200 * 17% = 7854
+      'total': 54054.0, -- 46200 + 7854 = 54054
       'status': 'pending',
       'notes': 'Payment due in 30 days',
     });

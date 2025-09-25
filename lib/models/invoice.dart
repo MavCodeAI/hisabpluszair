@@ -8,8 +8,8 @@ class Invoice {
   final DateTime dueDate;
   final List<InvoiceItem> items;
   final double subtotal;
-  final double gstRate;
-  final double gstAmount;
+  final double gstRate; // Sales Tax Rate (Pakistan) - keeping field name for DB compatibility
+  final double gstAmount; // Sales Tax Amount (Pakistan) - keeping field name for DB compatibility
   final double total;
   final String status; // 'pending', 'paid', 'overdue'
   final String? notes;

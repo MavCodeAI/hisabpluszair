@@ -14,7 +14,7 @@ class OfflineAIService {
 • Customer details add کریں (نام، CNIC، address)
 • Products/Services select کریں
 • Quantity اور rates enter کریں
-• GST (17%) automatically calculate ہوگا
+• Sales Tax (17%) automatically calculate ہوگا
 • Save کر کے PDF download کریں
 
 💡 **Pro Tips:**
@@ -81,7 +81,7 @@ class OfflineAIService {
 • Net Profit = Gross Profit - Operating Expenses
 • Profit Margin = (Profit ÷ Sales) × 100
 
-💡 **Pakistan Business:** GST effect bhi consider کریں''',
+💡 **Pakistan Business:** Sales Tax effect bhi consider کریں''',
 
     'loss': '''📉 **Loss Analysis:**
 • Identify low-margin products
@@ -95,7 +95,7 @@ class OfflineAIService {
 
     // ===== TAX MANAGEMENT =====
     'tax': '''🏦 **Pakistani Tax System:**
-• **GST Rate:** 17% (registered businesses)
+• **Sales Tax Rate:** 17% (registered businesses)
 • **Income Tax:** Slab rate system
 • **Withholding Tax:** Various rates
 • **Advance Tax:** Quarterly payments
@@ -104,15 +104,15 @@ class OfflineAIService {
 
 📞 **FBR Helpline:** 111-772-772''',
 
-    'gst': '''🧮 **GST (General Sales Tax):**
+    'sales tax': '''🧮 **Sales Tax (Pakistan):**
 • **Rate:** 17% for most goods/services
-• **Registration:** Mandatory if turnover > 5 million
+• **Registration:** Mandatory if turnover > 5 million PKR
 • **Monthly Filing:** 18th of next month
-• **Input Tax:** Purchase پر paid GST
-• **Output Tax:** Sales پر charged GST
+• **Input Tax:** Purchase پر paid Sales Tax
+• **Output Tax:** Sales پر charged Sales Tax
 • **Refund:** Input > Output cases میں
 
-📊 **Calculation:** GST = (Amount × 17) ÷ 100''',
+📊 **Calculation:** Sales Tax = (Amount × 17) ÷ 100''',
 
     'income tax': '''💸 **Income Tax Rates (2024-25):**
 • **Salaried Individuals:**
@@ -171,7 +171,7 @@ class OfflineAIService {
 • Category/subcategory assignment
 • Unit of measurement (piece, kg, liter)
 • Purchase rate اور sale rate
-• Tax applicable (GST yes/no)
+• Tax applicable (Sales Tax yes/no)
 • Images attachment
 • Supplier information
 
@@ -288,7 +288,7 @@ class OfflineAIService {
 • **Profit & Loss:** Income statement
 • **Balance Sheet:** Assets & liabilities
 • **Cash Flow:** Money movement tracking
-• **Tax Reports:** GST, Income tax ready
+• **Tax Reports:** Sales Tax, Income tax ready
 • **Stock Reports:** Inventory valuation
 
 📤 **Export:** PDF, Excel formats available''',
@@ -797,7 +797,7 @@ class OfflineAIService {
 📚 **Popular Topics:**
 • Invoice/Bill making
 • Sales reports
-• Tax calculations (GST 17%)
+• Tax calculations (Sales Tax 17%)
 • Customer management
 • Inventory control
 • Profit analysis

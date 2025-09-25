@@ -7,8 +7,8 @@ class Expense {
   final DateTime date;
   final String paymentMethod; // 'cash', 'card', 'upi', 'bank_transfer'
   final String? receiptPath;
-  final bool isGstApplicable;
-  final double gstAmount;
+  final bool isGstApplicable; // Sales Tax applicable (Pakistan) - keeping field name for DB compatibility
+  final double gstAmount; // Sales Tax amount (Pakistan) - keeping field name for DB compatibility
 
   Expense({
     required this.id,

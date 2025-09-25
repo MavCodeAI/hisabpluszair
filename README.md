@@ -6,7 +6,7 @@ A professional Flutter-based accounting and billing application with AI assistan
 
 🧠 **AI Assistant** - Smart business guidance  
 📄 **PDF Reports** - Professional invoices and reports  
-🇵🇰 **Pakistani Optimized** - GST 17%, PKR currency  
+🇵🇰 **Pakistani Optimized** - Sales Tax 17%, PKR currency  
 🗣️ **Bilingual** - Urdu + English support  
 📱 **Mobile Ready** - Responsive design  
 
@@ -20,7 +20,7 @@ A professional Flutter-based accounting and billing application with AI assistan
 ### 🧾 Invoice Management
 - Create professional invoices
 - Customer management with CNIC
-- GST calculations (17% for Pakistan)
+- Sales Tax calculations (17% for Pakistan)
 - PDF generation and sharing
 
 ### 📦 Inventory Control
@@ -35,7 +35,7 @@ A professional Flutter-based accounting and billing application with AI assistan
 
 ### 📈 Reports & Analytics
 - Sales and profit reports
-- GST compliance reports
+- Sales Tax compliance reports
 - Visual charts and trends
 - PDF export for all reports
 

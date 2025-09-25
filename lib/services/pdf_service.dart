@@ -204,7 +204,7 @@ class PdfService {
         child: pw.Column(
           children: [
             _buildTotalRow('Subtotal:', 'Rs.${invoice.subtotal.toStringAsFixed(2)}'),
-            _buildTotalRow('GST (${invoice.gstRate.toStringAsFixed(0)}%):', 'Rs.${invoice.gstAmount.toStringAsFixed(2)}'),
+            _buildTotalRow('Sales Tax (${invoice.gstRate.toStringAsFixed(0)}%):', 'Rs.${invoice.gstAmount.toStringAsFixed(2)}'),
             pw.Divider(),
             _buildTotalRow(
               'Total:',

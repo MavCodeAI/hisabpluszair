@@ -369,7 +369,7 @@ class _ExpenseScreenState extends State<ExpenseScreen> {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: const Text(
-                      'GST',
+                      'Sales Tax',
                       style: TextStyle(
                         color: Colors.green,
                         fontSize: 10,

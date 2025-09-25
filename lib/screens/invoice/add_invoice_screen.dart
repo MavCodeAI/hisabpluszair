@@ -31,7 +31,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
   
   DateTime _selectedDate = DateTime.now();
   DateTime _dueDate = DateTime.now().add(const Duration(days: 30));
-  double _gstRate = 18.0;
+  double _salesTaxRate = 17.0;
   
   final List<InvoiceItem> _items = [];
 
@@ -311,8 +311,8 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
 
   Widget _buildTotalSection() {
     final subtotal = _items.fold(0.0, (sum, item) => sum + item.amount);
-    final gstAmount = (subtotal * _gstRate) / 100;
-    final total = subtotal + gstAmount;
+    final salesTaxAmount = (subtotal * _salesTaxRate) / 100;
+    final total = subtotal + salesTaxAmount;
 
     return Card(
       child: Padding(
@@ -329,12 +329,12 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<double>(
-              value: _gstRate,
+              value: _salesTaxRate,
               decoration: const InputDecoration(
-                labelText: 'GST Rate (%)',
+                labelText: 'Sales Tax Rate (%)',
                 border: OutlineInputBorder(),
               ),
-              items: [0.0, 5.0, 12.0, 18.0, 28.0].map((rate) {
+              items: [0.0, 17.0].map((rate) {
                 return DropdownMenuItem(
                   value: rate,
                   child: Text('${rate.toStringAsFixed(0)}%'),
@@ -342,7 +342,7 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
               }).toList(),
               onChanged: (value) {
                 setState(() {
-                  _gstRate = value!;
+                  _salesTaxRate = value!;
                 });
               },
             ),
@@ -358,8 +358,8 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('GST (${_gstRate.toStringAsFixed(0)}%):'),
-                Text('Rs.${gstAmount.toStringAsFixed(2)}'),
+                Text('Sales Tax (${_salesTaxRate.toStringAsFixed(0)}%):'),
+                Text('Rs.${salesTaxAmount.toStringAsFixed(2)}'),
               ],
             ),
             const Divider(),
@@ -471,8 +471,8 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
     }
 
     final subtotal = _items.fold(0.0, (sum, item) => sum + item.amount);
-    final gstAmount = (subtotal * _gstRate) / 100;
-    final total = subtotal + gstAmount;
+    final salesTaxAmount = (subtotal * _salesTaxRate) / 100;
+    final total = subtotal + salesTaxAmount;
 
     final invoiceProvider = Provider.of<InvoiceProvider>(context, listen: false);
     final invoiceNumber = invoiceProvider.generateInvoiceNumber();
@@ -487,8 +487,8 @@ class _AddInvoiceScreenState extends State<AddInvoiceScreen> {
       dueDate: _dueDate,
       items: _items,
       subtotal: subtotal,
-      gstRate: _gstRate,
-      gstAmount: gstAmount,
+      gstRate: _salesTaxRate,
+      gstAmount: salesTaxAmount,
       total: total,
       notes: _notesController.text.isNotEmpty ? _notesController.text : null,
     );

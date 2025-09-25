@@ -21,7 +21,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   DateTime _selectedDate = DateTime.now();
   String _selectedPaymentMethod = 'cash';
   String _selectedCategory = '';
-  bool _isGstApplicable = false;
+  bool _isSalesTaxApplicable = false;
 
   final List<String> _paymentMethods = [
     'cash',
@@ -278,21 +278,21 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             ),
             const SizedBox(height: 16),
             SwitchListTile(
-              title: const Text('GST Applicable'),
+              title: const Text('Sales Tax Applicable'),
               subtitle: Text(
-                _isGstApplicable
-                    ? 'GST is applicable for this expense'
-                    : 'No GST for this expense',
+                _isSalesTaxApplicable
+                    ? 'Sales Tax is applicable for this expense'
+                    : 'No Sales Tax for this expense',
               ),
-              value: _isGstApplicable,
+              value: _isSalesTaxApplicable,
               onChanged: (value) {
                 setState(() {
-                  _isGstApplicable = value;
+                  _isSalesTaxApplicable = value;
                 });
               },
               activeColor: const Color(0xFF1976D2),
             ),
-            if (_isGstApplicable) ...[
+            if (_isSalesTaxApplicable) ...[
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -305,7 +305,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'GST Information',
+                      'Sales Tax Information',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1976D2),
@@ -313,7 +313,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'GST amount will be calculated at 18% of the expense amount.',
+                      'Sales Tax amount will be calculated at 17% of the expense amount.',
                       style: TextStyle(
                         color: Colors.grey[700],
                         fontSize: 14,
@@ -322,7 +322,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     if (_amountController.text.isNotEmpty && double.tryParse(_amountController.text) != null) ...[
                       const SizedBox(height: 8),
                       Text(
-                        'GST Amount: Rs.${(double.parse(_amountController.text) * 0.18).toStringAsFixed(2)}',
+                        'Sales Tax Amount: Rs.${(double.parse(_amountController.text) * 0.17).toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF1976D2),
@@ -389,7 +389,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     }
 
     final amount = double.parse(_amountController.text);
-    final gstAmount = _isGstApplicable ? amount * 0.18 : 0.0;
+    final salesTaxAmount = _isSalesTaxApplicable ? amount * 0.17 : 0.0;
     
     final expense = Expense(
       id: 'exp_${DateTime.now().millisecondsSinceEpoch}',
@@ -399,8 +399,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       category: _selectedCategory.isNotEmpty ? _selectedCategory : _categoryController.text.trim(),
       date: _selectedDate,
       paymentMethod: _selectedPaymentMethod,
-      isGstApplicable: _isGstApplicable,
-      gstAmount: gstAmount,
+      isGstApplicable: _isSalesTaxApplicable,
+      gstAmount: salesTaxAmount,
     );
 
     Provider.of<ExpenseProvider>(context, listen: false).addExpense(expense);

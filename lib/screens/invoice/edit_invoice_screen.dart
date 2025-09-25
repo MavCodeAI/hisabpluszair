@@ -27,7 +27,7 @@ class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
   
   late DateTime _selectedDate;
   late DateTime _dueDate;
-  late double _gstRate;
+  late double _salesTaxRate;
   
   late List<InvoiceItem> _items;
 
@@ -43,7 +43,7 @@ class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
     
     _selectedDate = widget.invoice.date;
     _dueDate = widget.invoice.dueDate;
-    _gstRate = widget.invoice.gstRate;
+    _salesTaxRate = widget.invoice.gstRate;
     
     // Create a copy of the items list
     _items = widget.invoice.items.map((item) => InvoiceItem(
@@ -329,8 +329,8 @@ class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
 
   Widget _buildTotalSection() {
     final subtotal = _items.fold(0.0, (sum, item) => sum + item.amount);
-    final gstAmount = (subtotal * _gstRate) / 100;
-    final total = subtotal + gstAmount;
+    final salesTaxAmount = (subtotal * _salesTaxRate) / 100;
+    final total = subtotal + salesTaxAmount;
 
     return Card(
       child: Padding(
@@ -347,12 +347,12 @@ class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<double>(
-              value: _gstRate,
+              value: _salesTaxRate,
               decoration: const InputDecoration(
-                labelText: 'GST Rate (%)',
+                labelText: 'Sales Tax Rate (%)',
                 border: OutlineInputBorder(),
               ),
-              items: [0.0, 5.0, 12.0, 18.0, 28.0].map((rate) {
+              items: [0.0, 17.0].map((rate) {
                 return DropdownMenuItem(
                   value: rate,
                   child: Text('${rate.toStringAsFixed(0)}%'),
@@ -360,7 +360,7 @@ class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
               }).toList(),
               onChanged: (value) {
                 setState(() {
-                  _gstRate = value!;
+                  _salesTaxRate = value!;
                 });
               },
             ),
@@ -376,8 +376,8 @@ class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('GST (${_gstRate.toStringAsFixed(0)}%):'),
-                Text('Rs.${gstAmount.toStringAsFixed(2)}'),
+                Text('Sales Tax (${_salesTaxRate.toStringAsFixed(0)}%):'),
+                Text('Rs.${salesTaxAmount.toStringAsFixed(2)}'),
               ],
             ),
             const Divider(),
@@ -503,8 +503,8 @@ class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
     }
 
     final subtotal = _items.fold(0.0, (sum, item) => sum + item.amount);
-    final gstAmount = (subtotal * _gstRate) / 100;
-    final total = subtotal + gstAmount;
+    final salesTaxAmount = (subtotal * _salesTaxRate) / 100;
+    final total = subtotal + salesTaxAmount;
 
     final updatedInvoice = Invoice(
       id: widget.invoice.id,
@@ -516,8 +516,8 @@ class _EditInvoiceScreenState extends State<EditInvoiceScreen> {
       dueDate: _dueDate,
       items: _items,
       subtotal: subtotal,
-      gstRate: _gstRate,
-      gstAmount: gstAmount,
+      gstRate: _salesTaxRate,
+      gstAmount: salesTaxAmount,
       total: total,
       status: widget.invoice.status, // Keep original status
       notes: _notesController.text.isNotEmpty ? _notesController.text : null,

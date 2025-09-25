@@ -83,7 +83,7 @@ class ApiKeys {
 🇵🇰 PAKISTANI BUSINESS OPTIMIZED:
 - Urdu language support in all modes
 - PKR currency calculations  
-- Local tax guidance (GST 17%)
+- Local tax guidance (Sales Tax 17%)
 - Business context understanding
 - Offline knowledge base covers local requirements
 

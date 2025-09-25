@@ -1,13 +1,5 @@
-flutter:
-  uses-material-design: true
-
-  # App assets
-  assets:
-    - assets/images/
-    - assets/icons/
-
 name: hisaab_plus
-description: HisaabPlus v3.0 - Hybrid AI Business Management | 700+ Offline Topics + 6 Online APIs | Pakistani Accounting Solution
+description: HisaabPlus v3.0 - Hybrid AI Business Management App | 700+ Offline Topics + 6 Online APIs | Pakistani Accounting Solution with PDF Generation
 
 publish_to: 'none'
 version: 3.0.0+2
@@ -64,3 +56,11 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^3.0.1
+
+flutter:
+  uses-material-design: true
+
+  # App assets
+  assets:
+    - assets/images/
+    - assets/icons/
